@@ -4,13 +4,28 @@ const cors = require("cors")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const adminModel = require("./models/admin")
+const peopleModel = require("./models/people")
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
 mongoose.connect("mongodb+srv://alfiyakn:alfiyakn@cluster0.l8relji.mongodb.net/wayanadDb?retryWrites=true&w=majority&appName=Cluster0")
-
+app.post("/addPeople",(req,res)=>{
+    let input=req.body
+    let token=req.headers.token
+    jwt.verify(token,"rescue-app",
+        (error,decoded)=>{
+            if (decoded && decoded.email) {
+               let result=new peopleModel(input)
+               result.save()
+               res.json({"status":"success"}) 
+            } else {
+                res.json({"status":"failed"})
+            }
+        }
+    )
+})
 app.post("/adminSignUp", (req, res) => {
     let input = req.body
     let hashedPassword = bcrypt.hashSync(input.password, 10)

@@ -11,6 +11,29 @@ app.use(cors())
 app.use(express.json())
 
 mongoose.connect("mongodb+srv://alfiyakn:alfiyakn@cluster0.l8relji.mongodb.net/wayanadDb?retryWrites=true&w=majority&appName=Cluster0")
+//view all missing people
+app.post("/viewall",(req,res)=>{
+    let token=req.headers.token
+    jwt.verify(token,"rescue-app",
+        (error,decoded)=>{
+            if (decoded && decoded.email) {
+                peopleModel.find().then(
+                    (items)=>{
+                        res.json(items)
+                    }
+                ).catch(
+                    (error)=>{
+                        res.json({"status":"error"})
+                    }
+                )
+                
+            } else {
+                res.json({"status":"invalid authentication"})
+            }
+
+        }
+    )
+})
 app.post("/addPeople",(req,res)=>{
     let input=req.body
     let token=req.headers.token

@@ -59,7 +59,7 @@ app.post("/adminSignUp", (req, res) => {
     console.log(input)
     let result = new adminModel(input)
     result.save()
-    res.json({ "status": "succes" })
+    res.json({ "status": "success" })
 })
 
 //admin signin

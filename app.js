@@ -12,54 +12,58 @@ app.use(express.json())
 
 mongoose.connect("mongodb+srv://alfiyakn:alfiyakn@cluster0.l8relji.mongodb.net/wayanadDb?retryWrites=true&w=majority&appName=Cluster0")
 //view all missing people
-app.post("/viewall",(req,res)=>{
-    let token=req.headers.token
-    jwt.verify(token,"rescue-app",
-        (error,decoded)=>{
+app.post("/viewall", (req, res) => {
+    let token = req.headers.token
+    jwt.verify(token, "rescue-app",
+        (error, decoded) => {
             if (decoded && decoded.email) {
                 peopleModel.find().then(
-                    (items)=>{
+                    (items) => {
                         res.json(items)
                     }
                 ).catch(
-                    (error)=>{
-                        res.json({"status":"error"})
+                    (error) => {
+                        res.json({ "status": "error" })
                     }
                 )
-                
+
             } else {
-                res.json({"status":"invalid authentication"})
+                res.json({ "status": "invalid authentication" })
             }
 
         }
     )
 })
-app.post("/addPeople",(req,res)=>{
-    let input=req.body
-    let token=req.headers.token
-    jwt.verify(token,"rescue-app",
-        (error,decoded)=>{
+//add missing people
+app.post("/addPeople", (req, res) => {
+    let input = req.body
+    let token = req.headers.token
+    jwt.verify(token, "rescue-app",
+        (error, decoded) => {
             if (decoded && decoded.email) {
-               let result=new peopleModel(input)
-               result.save()
-               res.json({"status":"success"}) 
+                let result = new peopleModel(input)
+                result.save()
+                res.json({ "status": "success" })
             } else {
-                res.json({"status":"failed"})
+                res.json({ "status": "failed" })
             }
         }
     )
 })
+
+//admin signup
 app.post("/adminSignUp", (req, res) => {
     let input = req.body
     let hashedPassword = bcrypt.hashSync(input.password, 10)
-    input.password=hashedPassword
+    input.password = hashedPassword
     console.log(input)
     let result = new adminModel(input)
     result.save()
     res.json({ "status": "succes" })
 })
 
-app.post("/adminSignIn",async(req,res) => {
+//admin signin
+app.post("/adminSignIn", async (req, res) => {
     let input = req.body
     let result = adminModel.find({ email: input.email }).then(
         (response) => {
@@ -76,7 +80,7 @@ app.post("/adminSignIn",async(req,res) => {
                         }
                     )
                 } else {
-                    res.json({ "status":"invalid password"})
+                    res.json({ "status": "invalid password" })
                 }
             } else {
                 res.json({ "status": "invalid email" })
